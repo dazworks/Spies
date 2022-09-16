@@ -25,30 +25,6 @@
 		selectedCity: null
 	}
 
-	let CITIES = {
-		par: new City({name: "Paris", x:69, y:371, labelX:-1, labelY:12}),
-		lon: new City({name: "London", x:81, y:254, labelX:-1, labelY:12}),
-		bru: new City({name: "Brussels", x:159, y:337, labelX:-1, labelY:12}),
-		mon: new City({name: "Monaco", x:172, y:515, labelX:-1, labelY:12}),
-		gen: new City({name: "Geneva", x:186, y:424, labelX:-1, labelY:12}),
-		ams: new City({name: "Amsterdam", x:209, y:248, labelX:-1, labelY:12}),
-		ven: new City({name: "Venice", x:302, y:493, labelX:-1, labelY:12}),
-		rom: new City({name: "Rome", x:320, y:586, labelX:-1, labelY:12}),
-		ber: new City({name: "Berlin", x:323, y:294, labelX:-1, labelY:12}),
-		sto: new City({name: "Stockholm", x:383, y:67, labelX:-1, labelY:12}),
-		vie: new City({name: "Vienna", x:384, y:422, labelX:-1, labelY:12}),
-		bud: new City({name: "Budapest", x:482, y:425, labelX:-1, labelY:12}),
-		war: new City({name: "Warsaw", x:494, y:299, labelX:-1, labelY:12}),
-		bel: new City({name: "Belgrade", x:497, y:517, labelX:-1, labelY:12}),
-		kie: new City({name: "Kiev", x:626, y:314, labelX:-1, labelY:12}),
-		ist: new City({name: "Istanbul", x:629, y:587, labelX:-1, labelY:12}),
-		mos: new City({name: "Moscow", x:670, y:137, labelX:-1, labelY:12}),
-	}
-
-	let ROADS = new Set([
-	])
-
-
 	class City extends Konva.Group {
 		constructor(options) {
 			options.draggable = true
@@ -69,9 +45,21 @@
 				}
 				if (STATE.selectedCity != city) {
 					let road = new Road(STATE.selectedCity, city)
-					ROADS.add(road)
-					city.getParent().add(road)
-					road.moveToBottom()
+					let existingRoad = null
+					for (let other of ROADS) {
+						if (other.connectsTo(city) && other.connectsTo(STATE.selectedCity)) {
+							existingRoad = other
+						}
+					}
+					if (existingRoad) {
+						removeRoad(existingRoad)
+					} else {
+						ROADS.add(road)
+						city.getParent().add(road)
+						road.moveToBottom()
+						road.doFade()
+					}
+					refreshSource()
 				}
 				STATE.selectedCity.deselect()
 				STATE.selectedCity = null
@@ -141,91 +129,6 @@
 		}
 	}
 
-/*
-  class City0 {
-		constructor(name, isBonus, x, y, labelX = -(CONF.cityRadius * 0.1), labelY = (CONF.cityRadius * 1.3)) {
-			this.name = name
-			this.isBonus = isBonus
-			this.x = x
-			this.y = y
-			this.labelX = labelX
-			this.labelY = labelY
-			this.group = new Konva.Group({
-				x: this.x,
-				y: this.y,
-				draggable: true
-			})
-		}
-
-		addToLayer(layer) {
-			let group = this.group
-			let dot = new Konva.Circle({
-				x: 0,
-				y: 0,
-				radius: CONF.cityRadius,
-				fill: CONF.mapColor,
-				stroke: 'gray',
-				strokeWidth: this.isBonus ? 4 : 3
-			})
-
-			let label = new Konva.Text({
-        x: this.labelX,
-        y: this.labelY,
-        text: this.name,
-        fontSize: CONF.cityRadius * 2,
-        fontFamily: 'Tahoma',
-				fontStyle: this.isBonus ? 'bold' : 'normal',
-				fill: '#555',
-				fillAfterStrokeEnabled: true,
-				stroke: CONF.mapColor,
-				letterSpacing: 0.7,
-				scaleX: 0.8,
-				//shadowForStrokeEnabled: false,
-				//shadowOpacity: 1,
-				//shadowBlur: 0,
-				//shadowColor: '#555',
-				//shadowOffsetX: 0.85
-      })
-			group.city = this
-			group.on('dragend', function () {
-				this.city.x = this.x()
-				this.city.y = this.y()
-				console.log(`new City0("${this.city.name}", ${this.city.isBonus}, ${this.x()}, ${this.y()}, ${label.x()}, ${label.y()})`)
-				return true
-			})
-
-			label.on('dblclick dbltap', function () {
-				let position = this.absolutePosition()
-				if (this.textDecoration() == 'underline') {
-					this.textDecoration('')
-					this.draggable(false)
-					this.moveTo(group)
-				} else {
-					this.textDecoration('underline')
-					this.moveTo(layer)
-					this.draggable(true)
-				}
-				this.absolutePosition(position)
-			})
-			label.on('dragend', function() {
-				let position = this.absolutePosition()
-				this.textDecoration('')
-				this.draggable(false)
-				this.moveTo(group)
-				this.absolutePosition(position)
-			})
-
-			group.add(dot)
-			group.add(label)
-			layer.add(group)
-		}
-
-		printCode() {
-
-		}
-  }
-// */
-
 	class Road extends Konva.Group {
 		constructor(city1, city2, options = {}) {
 			super(options)
@@ -257,9 +160,10 @@
 				tension: 0.5,
 				bezier: true
 			})
-		///*
+
 			let tween = null
 			this.doFade = function () {
+		///*  // comment out to always show control points
 				if (!tween) {
 					tween = new Konva.Tween({
 						node: controlPoint,
@@ -268,6 +172,7 @@
 					})
 				}
 				tween.play()
+	  // */
 			}
 			this.doAppear = function () {
 				if (tween) {
@@ -277,7 +182,6 @@
 			path.on('mouseout', () => this.doFade())
 					.on('mouseover', () => this.doAppear())
 
-	  // */
 			let group = this
 			let controlPointMoved = function() {
 				group.dX = controlPoint.x() - (city1.x() + city2.x()) / 2
@@ -288,8 +192,8 @@
 
 			let endPointMoved = function() {
 				if (group) {
-					controlPoint.y((city1.y() + city2.y()) / 2 + group.dY)
 					controlPoint.x((city1.x() + city2.x()) / 2 + group.dX)
+					controlPoint.y((city1.y() + city2.y()) / 2 + group.dY)
 					path.points(pathPoints())
 				}
 			}
@@ -304,7 +208,8 @@
 			this.add(controlPoint)
 
 			this.connectsTo = function(city) {
-				return city == this.city1 || city == this.city2
+				//console.log(city, this.city1)
+				return city == city1 || city == city2
 			}
 
 			this.toSourceStr = function() {
@@ -317,26 +222,34 @@
 		}
 	}
 
-	let officialCities = [
-		{"name": "London", "closeOrder": 0, "x":603, "y":768, "labelLocation": "topLeft"},
-		{"name": "Amsterdam", "closeOrder": 7, "x":733, "y":764, "labelLocation": "top"},
-		{"name": "Brussels", "closeOrder": 8, "x":680, "y":848, "labelLocation": "right"},
-		{"name": "Stockholm", "closeOrder": 2, "x":921, "y":578},
-		{"name": "Berlin", "x":843, "y":800},
-		{"name": "Warsaw", "x":1032, "y":808},
-		{"name": "Kiev", "closeOrder": 6, "x":1174, "y":826},
-		{"name": "Moscow", "closeOrder": 4, "x":1224, "y":641, "labelLocation": "top"},
-		{"name": "Vienna", "x":910, "y":933},
-		{"name": "Geneva", "x":715, "y":934, "labelLocation": "bottomLeft"},
-		{"name": "Paris", "closeOrder": 3, "x":601, "y":886, "labelLocation": "bottomLeft"},
-		{"name": "Monaco", "x":712, "y":1027},
-		{"name": "Venice", "x":827, "y":1006},
-		{"name": "Rome", "closeOrder": 5, "x":843, "y":1103},
-		{"name": "Istanbul", "closeOrder": 1, "x":1179, "y":1100},
-		{"name": "Budapest", "x":1012, "y":933},
-		{"name": "Belgrade", "x":1030, "y":1030}
-	]
+	// Replace this section to save the map:
 
+	let CITIES = {
+		par: new City({name: "Paris", x:69, y:371, labelX:-1, labelY:12}),
+		lon: new City({name: "London", x:81, y:254, labelX:-1, labelY:12}),
+		bru: new City({name: "Brussels", x:159, y:337, labelX:-1, labelY:12}),
+		mon: new City({name: "Monaco", x:172, y:515, labelX:-1, labelY:12}),
+		gen: new City({name: "Geneva", x:186, y:424, labelX:-1, labelY:12}),
+		ams: new City({name: "Amsterdam", x:209, y:248, labelX:-1, labelY:12}),
+		ven: new City({name: "Venice", x:302, y:493, labelX:-1, labelY:12}),
+		rom: new City({name: "Rome", x:320, y:586, labelX:-1, labelY:12}),
+		ber: new City({name: "Berlin", x:323, y:294, labelX:-1, labelY:12}),
+		sto: new City({name: "Stockholm", x:383, y:67, labelX:-1, labelY:12}),
+		vie: new City({name: "Vienna", x:384, y:422, labelX:-1, labelY:12}),
+		bud: new City({name: "Budapest", x:482, y:425, labelX:-1, labelY:12}),
+		war: new City({name: "Warsaw", x:494, y:299, labelX:-1, labelY:12}),
+		bel: new City({name: "Belgrade", x:497, y:517, labelX:-1, labelY:12}),
+		kie: new City({name: "Kiev", x:626, y:314, labelX:-1, labelY:12}),
+		ist: new City({name: "Istanbul", x:629, y:587, labelX:-1, labelY:12}),
+		mos: new City({name: "Moscow", x:670, y:137, labelX:-1, labelY:12}),
+	}
+
+	let ROADS = new Set([
+	])
+
+	// End of section
+
+	let layer
 	onMount(() => {
 		// first we need to create a stage
 		var stage = new Konva.Stage({
@@ -355,12 +268,7 @@
 		// Todo: add map image here
 		stage.add(bgLayer)
 
-		var layer = new Konva.Layer();
-
-		for (var cityInfo of officialCities) {
-			let city = new City({name: cityInfo.name, x: cityInfo.x - 535, y: cityInfo.y - 510})
-			CITIES[city.abbr()] = city
-		}
+		layer = new Konva.Layer();
 
 		for (let road of ROADS) {
 			layer.add(road)
@@ -371,91 +279,7 @@
 		}
 
 		refreshSource()
-		//console.log(CITIES.bud)
-		/*
-		let ber = new City0('Berlin', true, 20, 20)
-		let vie = new City0('Vienna', false, 180, 80)
-		let par = new City0('Paris', false, 50, 300)
 
-		let controlPoint = new Konva.Circle({
-			x: (ber.x + vie.x) / 2,
-			y: (ber.y + vie.y) / 2,
-			radius: 3,
-			stroke: 'black',
-			strokeWidth: 0.5,
-			draggable: true
-		})
-
-
-		controlPoint.on('dragmove', function() {
-			updateRoadCurve(road1, controlPoint.x(), controlPoint.y())
-		})
-
-		function updateRoadCurve(road, x, y) {
-			let points = road.points()
-			points[2] = x
-			points[3] = y
-			road.points(points)
-		}
-
-		let road1 = new Konva.Line({
-			points: [ber.x, ber.y, controlPoint.x(), controlPoint.y(), vie.x, vie.y],
-			stroke: 'gray',
-			strokeWidth: 3,
-			tension: 0.5,
-			bezier: true
-		});
-		layer.add(road1)
-		layer.add(controlPoint)
-
-		let controlPoint2 = new Konva.Circle({
-			x: (ber.x + par.x) / 2,
-			y: (ber.y + par.y) / 2,
-			radius: 4,
-			stroke: 'black',
-			strokeWidth: 1,
-			hitStrokeWidth: 9,
-			draggable: true
-		})
-
-		let road2 = new Konva.Shape({
-			stroke: 'gray',
-			strokeWidth: 3,
-			hitStrokeWidth: 9,
-			fillEnabled: false,
-			sceneFunc: (ctx, shape) => {
-          ctx.beginPath();
-          ctx.moveTo(ber.group.x(), ber.group.y());
-          ctx.quadraticCurveTo(
-            controlPoint2.x(),
-            controlPoint2.y(),
-            par.x,
-            par.y
-          );
-          ctx.fillStrokeShape(shape);
-        },
-		})
-		let showControlPoint = function() {
-			tween.reset()
-		}
-		let fadeControlPoint = function() {
-			tween.play()
-		}
-		controlPoint2.on('mouseover', showControlPoint).on('mouseout', fadeControlPoint)
-		road2.on('mouseover', showControlPoint).on('mouseout', fadeControlPoint)
-		layer.add(road2)
-		layer.add(controlPoint2)
-		var tween = new Konva.Tween({
-        node: controlPoint2,
-        duration: 1,
-        strokeWidth: 0
-      });
-		controlPoint2.strokeWidth(0)
-
-		ber.addToLayer(layer)
-		vie.addToLayer(layer)
-		par.addToLayer(layer)
-*/
 		stage.add(layer)
 		layer.draw();
 
@@ -495,14 +319,32 @@
 		}
 	}
 
-	function removeCity() {
+	function addDisabled() {
+		return !newCityNameInput || newCityNameInput.value == ""
+	}
 
+	function removeRoad(road) {
+		ROADS.delete(road)
+		road.destroy()
+		refreshSource()
+	}
+
+	function removeCity() {
+		let city = STATE.selectedCity
+		for (let road of ROADS) {
+			if (road.connectsTo(city)) {
+				removeRoad(road)
+			}
+		}
+		STATE.selectedCity = null
+		city.destroy()
+		delete CITIES[city.abbr()]
+		refreshSource()
 	}
 </script>
 
 <div bind:this={container}></div>
 <div style='margin:16px 0 8px; display:flex; gap:16px'>
-	<button on:click={refreshSource} style='margin-right:16px; display:none'>Refresh</button>
 	<form on:submit|preventDefault={addCity} style='display:inline'>
 		<input type='text' bind:value={newCityName} placeholder='New City Name'/>
 		<button type='submit' disabled='{!newCityName}'>Add</button>
