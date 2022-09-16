@@ -1,0 +1,110 @@
+Bifocal 2 Me 0 Vie / Them 0 Bru
+Ams-10
+Bru m,m
+Vie mWar,S!
+
+Bridges 2 Me 1 Bud / Them 0 Sto
+Vie-10
+Sto m,cBer
+Bud mVie,mVen /Vie-20
+Ber m,S /Par-10
+Ven c,w /Gen-10
+_?_ cWar,m /Vie-30
+Ven SR,w
+_?_ E,m
+Ven mGen,S /Par-2
+_?_ ?,m /Mon-10
+Gen c,mVen /Par-0
+Gen-10
+Vie c,m /Bru-2
+Ven E, mMon /Gen-20
+_?_ ?,m /Bel-10
+Mon L!Ber,mVen /Rom-2
+Ber mGen,c,m /Bel-20
+Ven D,mVie
+_?_ ?,m /Bel-2
+Vie c,w
+Ven c,m
+Vie D,mBer /Ven-10
+Gen ?,m /Sto-2 /Vie-10
+Ber S,mWar
+_?_ ?,m /Vie-A
+War L!Ven,mBud /Ber-10
+Ven ?,m /Ven-10
+Bud L!Gen,m /Ven-2 Ber-20
+Gen ?,m,m
+Vie mWar,c,w /Gen-10
+War! S
+
+
+Bifocal/2/Me 0 Vie/Them 0 Bru
+Ams-10/Bru m,m
+N/Vie mWar,S!
+
+Bridges/2/Me 1 Bud/Them 0 Sto
+Vie-10/Sto m,cBer
+Bud mVie,mVen
+Vie-20/Ber m,S
+Par-10/Ven c,w
+Gen-10/? cWar,m
+Vie-30/Ven SR,w
+N/? E,m
+N/Ven mGen,S/Par-2
+N/? ?,m/Par-1
+Mon-10/Gen c,mVen/Par-0
+Gen-10/Vie c,m/Bru-2
+N/Ven E,mMon/Bru-1
+Gen-20/? ?,m/Bru-0
+Bel-10/Mon L!Ber,mVen/Rom-2
+N/Ber mGen,c,m/Rom-1
+Bel-20/Ven D,mVie/Rom-0
+N/? ?,m/Bel-2
+N/Vie c,w/Bel-1
+N/Ven c,m/Bel-0
+N/Vie D,mBer/Sto-2
+Ven-10/Gen ?,m/Sto-1
+Vie-10/Ber S,mWar/Sto-0
+N/? ?,m/Mon-2
+Vie-A/War L!Ven,mBud/Mon-1
+Ber-10/Ven ?,m/Mon-0
+Ven-10/Bud L!Gen,m/Ven-2
+Ber-20/Gen ?,m,m/Ven-1
+N/Vie mWar,c,w/Ven-0
+Gen-10/War! S
+
+
+
+
+
+
+
+Bridges/2/Me 1 Bud/Them 0 Sto
+Vie-10/Sto/m,cBer
+Bud/mVie,mVen
+Vie-20/Ber/m,S
+Par-10/Ven/c,w
+Gen-10/?/cWar,m
+Vie-30/Ven/SR,w
+N/?/E,m
+N/Ven/mGen,S/Par-2
+N/?/?,m/Par-1
+Mon-10/Gen/c,mVen/Par-0
+Gen-10/Vie/c,m/Bru-2
+N/Ven/E,mMon/Bru-1
+Gen-20/?/?,m/Bru-0
+Bel-10/Mon/L!Ber,mVen/Rom-2
+N/Ber/mGen,c,m/Rom-1
+Bel-20/Ven/D,mVie/Rom-0
+N/?/?,m/Bel-2
+N/Vie/c,w/Bel-1
+N/Ven/c,m/Bel-0
+N/Vie/D,mBer/Sto-2
+Ven-10/Gen/?,m/Sto-1
+Vie-10/Ber/S,mWar/Sto-0
+N/?/?,m/Mon-2
+Vie-A/War/L!Ven,mBud/Mon-1
+Ber-10/Ven/?,m/Mon-0
+Ven-10/Bud/L!Gen,m/Ven-2
+Ber-20/Gen/?,m,m/Ven-1
+N/Vie/mWar,c,w/Ven-0
+Gen-10/War!/S
