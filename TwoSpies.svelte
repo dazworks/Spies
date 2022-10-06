@@ -4,6 +4,7 @@
  	import { Text } from "konva/lib/shapes/Text";
  	import { Rect } from "konva/lib/shapes/Rect";
 	import { Line } from "konva/lib/shapes/Line";
+	import { Image } from "konva/lib/shapes/Image";
 
 	import {onMount} from 'svelte'
 
@@ -15,6 +16,7 @@
 	const CONF = {
 		cityRadius: 9,
 		mapColor: '#f7f4e9',
+		seaColor: '#9FCDBA',
 		mapWidth: 800,
 		mapHeight: 700,
 		cityColor: 'gray',
@@ -224,28 +226,68 @@
 
 	// Replace this section to save the map:
 
-	let CITIES = {
-		par: new City({name: "Paris", x:69, y:371, labelX:-1, labelY:12}),
-		lon: new City({name: "London", x:81, y:254, labelX:-1, labelY:12}),
-		bru: new City({name: "Brussels", x:159, y:337, labelX:-1, labelY:12}),
-		mon: new City({name: "Monaco", x:172, y:515, labelX:-1, labelY:12}),
-		gen: new City({name: "Geneva", x:186, y:424, labelX:-1, labelY:12}),
-		ams: new City({name: "Amsterdam", x:209, y:248, labelX:-1, labelY:12}),
-		ven: new City({name: "Venice", x:302, y:493, labelX:-1, labelY:12}),
-		rom: new City({name: "Rome", x:320, y:586, labelX:-1, labelY:12}),
-		ber: new City({name: "Berlin", x:323, y:294, labelX:-1, labelY:12}),
-		sto: new City({name: "Stockholm", x:383, y:67, labelX:-1, labelY:12}),
-		vie: new City({name: "Vienna", x:384, y:422, labelX:-1, labelY:12}),
-		bud: new City({name: "Budapest", x:482, y:425, labelX:-1, labelY:12}),
-		war: new City({name: "Warsaw", x:494, y:299, labelX:-1, labelY:12}),
-		bel: new City({name: "Belgrade", x:497, y:517, labelX:-1, labelY:12}),
-		kie: new City({name: "Kiev", x:626, y:314, labelX:-1, labelY:12}),
-		ist: new City({name: "Istanbul", x:629, y:587, labelX:-1, labelY:12}),
-		mos: new City({name: "Moscow", x:670, y:137, labelX:-1, labelY:12}),
-	}
+let CITIES = {
+  par: new City({name: "Paris", x:251, y:425, labelX:-45, labelY:2}),
+  lon: new City({name: "London", x:233, y:362, labelX:-44, labelY:-30}),
+  bru: new City({name: "Brussels", x:288, y:400, labelX:14, labelY:-9}),
+  mon: new City({name: "Monaco", x:317, y:520, labelX:-20, labelY:9}),
+  gen: new City({name: "Geneva", x:306, y:461, labelX:-43, labelY:7}),
+  ams: new City({name: "Amsterdam", x:323, y:356, labelX:-28, labelY:-35}),
+  ven: new City({name: "Venice", x:384, y:508, labelX:10, labelY:7}),
+  rom: new City({name: "Rome", x:406, y:569, labelX:-1, labelY:12}),
+  ber: new City({name: "Berlin", isBonus:true, x:405, y:378, labelX:-1, labelY:12}),
+  vie: new City({name: "Vienna", x:454, y:457, labelX:-1, labelY:12}),
+  sto: new City({name: "Stockholm", x:456, y:237, labelX:-1, labelY:12}),
+  bud: new City({name: "Budapest", x:538, y:458, labelX:13, labelY:-1}),
+  war: new City({name: "Warsaw", x:547, y:377, labelX:3, labelY:11}),
+  bel: new City({name: "Belgrade", x:547, y:520, labelX:-43, labelY:10}),
+  kie: new City({name: "Kiev", x:640, y:390, labelX:-1, labelY:12}),
+  ist: new City({name: "Istanbul", x:649, y:574, labelX:-1, labelY:12}),
+  mos: new City({name: "Moscow", x:677, y:280, labelX:-1, labelY:12}),
+}
 
-	let ROADS = new Set([
-	])
+let ROADS = new Set([
+  new Road(CITIES.lon, CITIES.par),
+  new Road(CITIES.lon, CITIES.bru),
+  new Road(CITIES.lon, CITIES.ams),
+  new Road(CITIES.par, CITIES.bru),
+  new Road(CITIES.bru, CITIES.ams),
+  new Road(CITIES.par, CITIES.gen),
+  new Road(CITIES.gen, CITIES.bru),
+  new Road(CITIES.par, CITIES.mon, {dX: -19, dY: 10}),
+  new Road(CITIES.gen, CITIES.mon, {dX: 7, dY: 0}),
+  new Road(CITIES.gen, CITIES.ven),
+  new Road(CITIES.mon, CITIES.ven),
+  new Road(CITIES.mon, CITIES.rom),
+  new Road(CITIES.ven, CITIES.rom),
+  new Road(CITIES.rom, CITIES.ist, {dX: -45, dY: 10}),
+  new Road(CITIES.ven, CITIES.vie, {dX: -13, dY: -2}),
+  new Road(CITIES.vie, CITIES.ber),
+  new Road(CITIES.ber, CITIES.gen),
+  new Road(CITIES.ams, CITIES.ber),
+  new Road(CITIES.ber, CITIES.sto, {dX: 4, dY: 4}),
+  new Road(CITIES.sto, CITIES.ams, {dX: 3, dY: 6}),
+  new Road(CITIES.sto, CITIES.mos, {dX: 2, dY: 25}),
+  new Road(CITIES.sto, CITIES.war, {dX: -16, dY: -2}),
+  new Road(CITIES.ber, CITIES.war),
+  new Road(CITIES.vie, CITIES.bud),
+  new Road(CITIES.vie, CITIES.war, {dX: 2, dY: 5}),
+  new Road(CITIES.war, CITIES.kie),
+  new Road(CITIES.war, CITIES.mos, {dX: -17, dY: -4}),
+  new Road(CITIES.mos, CITIES.kie, {dX: 1, dY: 7}),
+  new Road(CITIES.kie, CITIES.ist, {dX: -24, dY: 41}),
+  new Road(CITIES.bud, CITIES.war),
+  new Road(CITIES.bud, CITIES.kie, {dX: 3, dY: 14}),
+  new Road(CITIES.bud, CITIES.ist, {dX: 0, dY: 15}),
+  new Road(CITIES.bel, CITIES.ist, {dX: -5, dY: 9}),
+  new Road(CITIES.bel, CITIES.bud, {dX: -6, dY: 2}),
+  new Road(CITIES.bel, CITIES.vie, {dX: 8, dY: -2}),
+  new Road(CITIES.bel, CITIES.kie, {dX: -10, dY: 30}),
+  new Road(CITIES.vie, CITIES.ist, {dX: -25, dY: 26}),
+  new Road(CITIES.ven, CITIES.bel, {dX: 12, dY: -6}),
+])
+
+
 
 	// End of section
 
@@ -262,10 +304,17 @@
 		bgLayer.add(new Konva.Rect({
 			width: stage.width(),
 			height: stage.height(),
-			fill: CONF.mapColor,
+			fill: CONF.seaColor,
 			listening: false
 		}))
-		// Todo: add map image here
+		let mapImg = new window.Image()
+		mapImg.src = "https://gist.github.com/dazworks/f250de34784f9e36d3583ba337e2ffe4/raw/8ff0a6079d8b5048e8f106427913e4653ae4f0a6/map.svg"
+		let map = new Konva.Image({image: mapImg })
+		bgLayer.add(map)
+		map.x(-80)
+		map.y(-100)
+		map.width(stage.width()+200)
+		map.height(stage.height()+200)
 		stage.add(bgLayer)
 
 		layer = new Konva.Layer();
@@ -286,11 +335,11 @@
 	})
 
 	function refreshSource() {
-		let str = "let CITIES = ["
+		let str = "let CITIES = {"
 		for (let [_k, city] of Object.entries(CITIES)) {
 			str += `\n  ${city.toSourceStr()},`
 		}
-		str += "\n]\n\nlet ROADS = new Set(["
+		str += "\n}\n\nlet ROADS = new Set(["
 		for (let road of ROADS) {
 			str += `\n  ${road.toSourceStr()},`
 		}
